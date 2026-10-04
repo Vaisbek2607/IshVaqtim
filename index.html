@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ish Vaqtim</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ==================== WELCOME ==================== -->
+<section id="welcomeScreen" class="screen active">
+
+    <div class="authContainer">
+
+        <div class="appLogo">⏱️</div>
+
+        <h1>Ish Vaqtim</h1>
+        <p class="subtitle" data-i18n="welcomeSubtitle">
+            Ish vaqtini va maoshingizni nazorat qiling
+        </p>
+
+        <!-- Til -->
+        <div class="authLanguage">
+            <span>🌐</span>
+            <select id="welcomeLanguage" onchange="changeLanguage(this.value)">
+                <option value="uz">O‘zbekcha</option>
+                <option value="ru">Русский</option>
+            </select>
+        </div>
+
+        <button class="primaryBtn" onclick="showLogin()">
+            <span>🔐</span>
+            <span data-i18n="login">Kirish</span>
+        </button>
+
+        <button class="secondaryBtn" onclick="showRegister()">
+            <span>📝</span>
+            <span data-i18n="register">Ro‘yxatdan o‘tish</span>
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================== LOGIN ==================== -->
+<section id="loginScreen" class="screen">
+
+    <div class="authContainer">
+
+        <div class="backButton" onclick="showWelcome()">←</div>
+
+        <div class="appLogo small">⏱️</div>
+
+        <h2 data-i18n="loginTitle">Hisobga kirish</h2>
+
+        <!-- Til -->
+        <div class="authLanguage">
+            <span>🌐</span>
+            <select id="loginLanguage" onchange="changeLanguage(this.value)">
+                <option value="uz">O‘zbekcha</option>
+                <option value="ru">Русский</option>
+            </select>
+        </div>
+
+        <p class="infoText" data-i18n="loginNfcInfo">
+            Ro‘yxatdan o‘tgan NFC kartangiz orqali kiring
+        </p>
+
+        <button class="nfcButton" onclick="testLoginNfc()">
+            📡 NFC
+        </button>
+
+        <div id="loginMessage" class="message"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================== REGISTER ==================== -->
+<section id="registerScreen" class="screen">
+
+    <div class="authContainer">
+
+        <div class="backButton" onclick="showWelcome()">←</div>
+
+        <div class="appLogo small">⏱️</div>
+
+        <h2 data-i18n="registerTitle">Ro‘yxatdan o‘tish</h2>
+
+        <!-- Til -->
+        <div class="authLanguage">
+            <span>🌐</span>
+            <select id="registerLanguage" onchange="changeLanguage(this.value)">
+                <option value="uz">O‘zbekcha</option>
+                <option value="ru">Русский</option>
+            </select>
+        </div>
+
+        <!-- ===== STEP 1 ===== -->
+        <div id="registerStep1" class="registerStep">
+
+            <div class="stepNumber">1</div>
+
+            <h3 data-i18n="personalInfo">Shaxsiy ma’lumotlar</h3>
+
+            <input
+                id="regName"
+                type="text"
+                placeholder="Ism"
+                data-placeholder="name"
+            >
+
+            <input
+                id="regSurname"
+                type="text"
+                placeholder="Familiya"
+                data-placeholder="surname"
+            >
+
+            <button class="primaryBtn" onclick="nextRegisterStep(2)">
+                <span data-i18n="next">Davom etish</span> →
+            </button>
+
+        </div>
+
+
+        <!-- ===== STEP 2 ===== -->
+        <div id="registerStep2" class="registerStep hidden">
+
+            <div class="stepNumber">2</div>
+
+            <h3 data-i18n="workSchedule">Ish jadvali</h3>
+
+            <p class="label" data-i18n="scheduleType">
+                Ish jadvali
+            </p>
+
+            <div class="scheduleOptions">
+
+                <button
+                    class="scheduleBtn"
+                    data-schedule="2/2"
+                    onclick="selectSchedule('2/2', this)">
+                    2 / 2
+                </button>
+
+                <button
+                    class="scheduleBtn"
+                    data-schedule="5/2"
+                    onclick="selectSchedule('5/2', this)">
+                    5 / 2
+                </button>
+
+                <button
+                    class="scheduleBtn"
+                    data-schedule="6/1"
+                    onclick="selectSchedule('6/1', this)">
+                    6 / 1
+                </button>
+
+            </div>
+
+            <label data-i18n="scheduleStart">
+                Jadval boshlanish sanasi
+            </label>
+
+            <input
+                id="scheduleStart"
+                type="date"
+            >
+
+            <div class="stepButtons">
+
+                <button class="secondaryBtn" onclick="nextRegisterStep(1)">
+                    ←
+                </button>
+
+                <button class="primaryBtn" onclick="nextRegisterStep(3)">
+                    <span data-i18n="next">Davom etish</span> →
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===== STEP 3 ===== -->
+        <div id="registerStep3" class="registerStep hidden">
+
+            <div class="stepNumber">3</div>
+
+            <h3 data-i18n="workTime">
+                Ish vaqti
+            </h3>
+
+            <label data-i18n="workStart">
+                Ish boshlanishi
+            </label>
+
+            <input
+                id="workStart"
+                type="time"
+                value="08:00"
+            >
+
+            <label data-i18n="workEnd">
+                Ish tugashi
+            </label>
+
+            <input
+                id="workEnd"
+                type="time"
+                value="20:00"
+            >
+
+            <label data-i18n="break">
+                Tushlik / tanaffus
+            </label>
+
+            <input
+                id="breakMinutes"
+                type="number"
+                min="0"
+                value="60"
+                placeholder="60"
+            >
+
+            <div class="stepButtons">
+
+                <button class="secondaryBtn" onclick="nextRegisterStep(2)">
+                    ←
+                </button>
+
+                <button class="primaryBtn" onclick="nextRegisterStep(4)">
+                    <span data-i18n="next">Davom etish</span> →
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===== STEP 4 ===== -->
+        <div id="registerStep4" class="registerStep hidden">
+
+            <div class="stepNumber">4</div>
+
+            <h3 data-i18n="salary">
+                Oylik maosh
+            </h3>
+
+            <label data-i18n="monthlySalary">
+                Oylik maosh
+            </label>
+
+            <input
+                id="monthlySalary"
+                type="number"
+                min="0"
+                placeholder="90000"
+            >
+
+            <p class="hint" data-i18n="salaryHint">
+                Soatlik stavka rejalashtirilgan oylik ish soatlari asosida avtomatik hisoblanadi.
+            </p>
+
+            <div class="stepButtons">
+
+                <button class="secondaryBtn" onclick="nextRegisterStep(3)">
+                    ←
+                </button>
+
+                <button class="primaryBtn" onclick="nextRegisterStep(5)">
+                    <span data-i18n="next">Davom etish</span> →
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===== STEP 5 ===== -->
+        <div id="registerStep5" class="registerStep hidden">
+
+            <div class="stepNumber">5</div>
+
+            <h3 data-i18n="nfcRegistration">
+                NFC karta
+            </h3>
+
+            <div class="nfcInfoBox">
+
+                <div class="nfcIcon">📡</div>
+
+                <p data-i18n="nfcRegisterInfo">
+                    Ishga kirishda va ishdan chiqishda bir xil NFC karta ishlatiladi.
+                </p>
+
+                <strong data-i18n="nfcAuto">
+                    Tizim Kirish / Chiqishni avtomatik aniqlaydi.
+                </strong>
+
+            </div>
+
+            <button class="nfcButton" onclick="testRegisterNfc()">
+                📡 NFC kartani ro‘yxatdan o‘tkazish
+            </button>
+
+            <div id="registerNfcStatus" class="message"></div>
+
+            <div class="stepButtons">
+
+                <button class="secondaryBtn" onclick="nextRegisterStep(4)">
+                    ←
+                </button>
+
+                <button
+                    id="finishRegisterBtn"
+                    class="primaryBtn"
+                    onclick="finishRegistration()"
+                    disabled>
+                    <span data-i18n="finish">Tugatish</span> ✓
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================== HOME ==================== -->
+<section id="homeScreen" class="screen">
+
+    <!-- HEADER -->
+    <header class="profileHeader">
+
+        <div class="profileInfo">
+
+            <div class="profileName" id="headerName">
+                Vaisbek Davlatov
+            </div>
+
+            <div class="profileDetails">
+
+                <span id="headerSchedule">
+                    2/2
+                </span>
+
+                <span>•</span>
+
+                <span id="headerSalary">
+                    90 000 ₽
+                </span>
+
+            </div>
+
+            <div class="hourRateHeader">
+                <span data-i18n="hourRate">
+                    1 soat:
+                </span>
+
+                <strong id="headerHourlyRate">
+                    0 ₽
+                </strong>
+            </div>
+
+        </div>
+
+
+        <!-- TOP BUTTONS -->
+        <div class="headerActions">
+
+            <button
+                id="homeLanguageBtn"
+                class="iconBtn"
+                onclick="toggleLanguage()"
+                title="Language">
+                🌐
+            </button>
+
+            <button
+                id="settingsTopBtn"
+                class="iconBtn"
+                onclick="openSettings()"
+                title="Settings">
+                ⚙️
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- LANGUAGE MINI PANEL -->
+    <div id="languageQuickPanel" class="languageQuickPanel hidden">
+
+        <button onclick="changeLanguage('uz')">
+            🇺🇿 O‘zbekcha
+        </button>
+
+        <button onclick="changeLanguage('ru')">
+            🇷🇺 Русский
+        </button>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+    <div class="summaryGrid">
+
+        <div class="summaryCard">
+            <div class="summaryIcon">⏱️</div>
+            <div class="summaryLabel" data-i18n="workedHours">
+                Ishlangan soat
+            </div>
+            <div id="summaryHours" class="summaryValue">
+                0 soat
+            </div>
+        </div>
+
+        <div class="summaryCard">
+            <div class="summaryIcon">💰</div>
+            <div class="summaryLabel" data-i18n="earned">
+                Ishlangan pul
+            </div>
+            <div id="summaryPay" class="summaryValue">
+                0 ₽
+            </div>
+        </div>
+
+        <div class="summaryCard">
+            <div class="summaryIcon">📅</div>
+            <div class="summaryLabel" data-i18n="workedDays">
+                Ishlangan kun
+            </div>
+            <div id="summaryDays" class="summaryValue">
+                0
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- MONTH NAVIGATION -->
+    <div class="monthNavigation">
+
+        <button onclick="changeMonth(-1)">
+            ‹
+        </button>
+
+        <h2 id="currentMonth">
+            Oktyabr 2026
+        </h2>
+
+        <button onclick="changeMonth(1)">
+            ›
+        </button>
+
+    </div>
+
+
+    <!-- CALENDAR -->
+    <div class="calendarContainer">
+
+        <div class="weekDays">
+
+            <div data-i18n="mon">Du</div>
+            <div data-i18n="tue">Se</div>
+            <div data-i18n="wed">Ch</div>
+            <div data-i18n="thu">Pa</div>
+            <div data-i18n="fri">Ju</div>
+            <div data-i18n="sat">Sh</div>
+            <div data-i18n="sun">Ya</div>
+
+        </div>
+
+        <div id="calendar" class="calendar"></div>
+
+    </div>
+
+
+    <!-- LEGEND -->
+    <div class="calendarLegend">
+
+        <div>
+            <span class="legendBox scheduled"></span>
+            <span data-i18n="scheduledWork">
+                Rejadagi ish kuni
+            </span>
+        </div>
+
+        <div>
+            <span class="legendBox extra"></span>
+            <span data-i18n="extraWork">
+                Qo‘shimcha ish
+            </span>
+        </div>
+
+        <div>
+            <span class="legendBox rest"></span>
+            <span data-i18n="restDay">
+                Dam olish
+            </span>
+        </div>
+
+    </div>
+
+
+    <!-- SELECTED DAY -->
+    <div id="selectedDayPanel" class="selectedDayPanel hidden">
+
+        <h3 id="selectedDateTitle">
+            1-oktabr
+        </h3>
+
+        <div class="dayInputs">
+
+            <div>
+                <label data-i18n="start">
+                    Kirish
+                </label>
+
+                <input
+                    id="dayStart"
+                    type="time">
+            </div>
+
+            <div>
+                <label data-i18n="end">
+                    Chiqish
+                </label>
+
+                <input
+                    id="dayEnd"
+                    type="time">
+            </div>
+
+            <div>
+                <label data-i18n="break">
+                    Tanaffus
+                </label>
+
+                <input
+                    id="dayBreak"
+                    type="number"
+                    min="0">
+            </div>
+
+        </div>
+
+        <div class="dayResult">
+
+            <div>
+                <span data-i18n="hours">
+                    Soat
+                </span>
+
+                <strong id="dayHours">
+                    0
+                </strong>
+            </div>
+
+            <div>
+                <span data-i18n="payment">
+                    To‘lov
+                </span>
+
+                <strong id="dayPay">
+                    0 ₽
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="dayButtons">
+
+            <button class="primaryBtn" onclick="saveSelectedDay()">
+                💾 <span data-i18n="save">Saqlash</span>
+            </button>
+
+            <button class="dangerBtn" onclick="deleteSelectedDay()">
+                🗑️ <span data-i18n="delete">O‘chirish</span>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- NFC ATTENDANCE -->
+    <div class="nfcAttendance">
+
+        <h3 data-i18n="attendance">
+            Davomat
+        </h3>
+
+        <div class="nfcAttendanceInfo">
+
+            <div class="bigNfcIcon">📡</div>
+
+            <div>
+
+                <strong id="nfcTodayStatus">
+                    NFC orqali davomat
+                </strong>
+
+                <p data-i18n="attendanceInfo">
+                    Bitta karta bilan ertalab Kirish, kechqurun Chiqish.
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            class="nfcButton large"
+            onclick="nfcTest()">
+            📡 NFC kartani tekkizing
+        </button>
+
+        <div id="nfcMessage" class="message"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ==================== SETTINGS ==================== -->
+<section id="settingsScreen" class="screen">
+
+    <div class="settingsHeader">
+
+        <button class="backButton" onclick="openHome()">
+            ←
+        </button>
+
+        <h2 data-i18n="settings">
+            Sozlamalar
+        </h2>
+
+    </div>
+
+
+    <!-- PROFILE -->
+    <div class="settingsSection">
+
+        <h3>👤 <span data-i18n="profile">Profil</span></h3>
+
+        <label data-i18n="name">
+            Ism
+        </label>
+
+        <input id="settingsName" type="text">
+
+        <label data-i18n="surname">
+            Familiya
+        </label>
+
+        <input id="settingsSurname" type="text">
+
+    </div>
+
+
+    <!-- WORK SCHEDULE -->
+    <div class="settingsSection">
+
+        <h3>📅 <span data-i18n="workSchedule">Ish jadvali</span></h3>
+
+        <div class="scheduleOptions">
+
+            <button
+                class="scheduleBtn settingsScheduleBtn"
+                data-schedule="2/2"
+                onclick="selectSettingsSchedule('2/2', this)">
+                2 / 2
+            </button>
+
+            <button
+                class="scheduleBtn settingsScheduleBtn"
+                data-schedule="5/2"
+                onclick="selectSettingsSchedule('5/2', this)">
+                5 / 2
+            </button>
+
+            <button
+                class="scheduleBtn settingsScheduleBtn"
+                data-schedule="6/1"
+                onclick="selectSettingsSchedule('6/1', this)">
+                6 / 1
+            </button>
+
+        </div>
+
+        <label data-i18n="scheduleStart">
+            Jadval boshlanish sanasi
+        </label>
+
+        <input
+            id="settingsScheduleStart"
+            type="date">
+
+    </div>
+
+
+    <!-- WORK TIME -->
+    <div class="settingsSection">
+
+        <h3>⏰ <span data-i18n="workTime">Ish vaqti</span></h3>
+
+        <label data-i18n="workStart">
+            Ish boshlanishi
+        </label>
+
+        <input
+            id="settingsWorkStart"
+            type="time">
+
+        <label data-i18n="workEnd">
+            Ish tugashi
+        </label>
+
+        <input
+            id="settingsWorkEnd"
+            type="time">
+
+        <label data-i18n="break">
+            Tanaffus
+        </label>
+
+        <input
+            id="settingsBreak"
+            type="number"
+            min="0">
+
+    </div>
+
+
+    <!-- SALARY -->
+    <div class="settingsSection">
+
+        <h3>💰 <span data-i18n="salary">Maosh</span></h3>
+
+        <label data-i18n="monthlySalary">
+            Oylik maosh
+        </label>
+
+        <input
+            id="settingsSalary"
+            type="number"
+            min="0">
+
+        <div class="settingsRate">
+
+            <span data-i18n="hourRate">
+                1 soat:
+            </span>
+
+            <strong id="settingsHourlyRate">
+                0 ₽
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- NFC -->
+    <div class="settingsSection">
+
+        <h3>📡 NFC</h3>
+
+        <div class="nfcSettings">
+
+            <span data-i18n="nfcStatus">
+                NFC karta holati
+            </span>
+
+            <strong id="settingsNfcStatus">
+                —
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- SAVE -->
+    <button
+        class="primaryBtn fullWidth"
+        onclick="saveSettings()">
+        💾 <span data-i18n="saveChanges">O‘zgarishlarni saqlash</span>
+    </button>
+
+
+    <!-- LOGOUT -->
+    <div class="logoutSection">
+
+        <button
+            class="logoutBtn"
+            onclick="logout()">
+            🚪 <span data-i18n="logout">Hisobdan chiqish</span>
+        </button>
+
+        <p class="logoutHint" data-i18n="logoutHint">
+            Hisobdan chiqish ma’lumotlaringizni o‘chirmaydi.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ==================== FOOTER ==================== -->
+<footer id="appFooter" class="appFooter hidden">
+
+    <span>Ish Vaqtim</span>
+
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>

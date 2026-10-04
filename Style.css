@@ -1,0 +1,830 @@
+/* ================================
+   GLOBAL
+================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #202124;
+    min-height: 100vh;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ================================
+   SCREENS
+================================ */
+
+.screen {
+    display: none;
+    min-height: 100vh;
+}
+
+.screen.active {
+    display: block;
+}
+
+
+/* ================================
+   WELCOME / AUTH
+================================ */
+
+.authContainer {
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    margin: auto;
+    padding: 35px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.appLogo {
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 18px;
+    border-radius: 24px;
+    background: #2563eb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+}
+
+.appLogo.small {
+    width: 64px;
+    height: 64px;
+    border-radius: 19px;
+    font-size: 32px;
+}
+
+.authContainer h1,
+.authContainer h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.authContainer h1 {
+    font-size: 30px;
+}
+
+.authContainer h2 {
+    font-size: 25px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+.infoText {
+    text-align: center;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 10px 0 20px;
+}
+
+
+/* ================================
+   LANGUAGE
+================================ */
+
+.authLanguage {
+    width: fit-content;
+    margin: 0 auto 22px;
+    padding: 7px 12px;
+    border: 1px solid #d8dde5;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.authLanguage select {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #202124;
+    cursor: pointer;
+}
+
+
+/* ================================
+   BUTTONS
+================================ */
+
+.primaryBtn,
+.secondaryBtn,
+.dangerBtn,
+.logoutBtn,
+.nfcButton {
+    width: 100%;
+    min-height: 50px;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.primaryBtn {
+    background: #2563eb;
+    color: white;
+}
+
+.primaryBtn:hover {
+    opacity: 0.9;
+}
+
+.secondaryBtn {
+    background: #e9eef7;
+    color: #1f2937;
+    margin-top: 10px;
+}
+
+.dangerBtn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.nfcButton {
+    background: #111827;
+    color: white;
+    font-size: 17px;
+}
+
+.nfcButton.large {
+    min-height: 58px;
+    font-size: 18px;
+}
+
+.nfcButton:hover,
+.primaryBtn:hover,
+.secondaryBtn:hover,
+.dangerBtn:hover,
+.logoutBtn:hover {
+    transform: translateY(-1px);
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.stepButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.stepButtons .secondaryBtn {
+    width: 55px;
+    margin-top: 0;
+}
+
+.stepButtons .primaryBtn {
+    flex: 1;
+}
+
+
+/* ================================
+   BACK BUTTON
+================================ */
+
+.backButton {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: #e9eef7;
+    color: #111827;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+
+/* ================================
+   FORM
+================================ */
+
+.registerStep {
+    margin-top: 20px;
+}
+
+.registerStep h3 {
+    margin-bottom: 15px;
+}
+
+.stepNumber {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+label,
+.label {
+    display: block;
+    margin: 12px 0 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+input,
+select {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: white;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #2563eb;
+}
+
+.hint {
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ================================
+   SCHEDULE BUTTONS
+================================ */
+
+.scheduleOptions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.scheduleBtn {
+    min-height: 48px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background: white;
+    font-weight: 700;
+}
+
+.scheduleBtn.selected {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+
+/* ================================
+   NFC BOX
+================================ */
+
+.nfcInfoBox {
+    padding: 18px;
+    margin: 15px 0;
+    border-radius: 16px;
+    background: #eef2ff;
+    text-align: center;
+}
+
+.nfcIcon,
+.bigNfcIcon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.nfcInfoBox p {
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.nfcInfoBox strong {
+    font-size: 14px;
+}
+
+
+/* ================================
+   MESSAGE
+================================ */
+
+.message {
+    min-height: 22px;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+
+/* ================================
+   HOME HEADER
+================================ */
+
+.profileHeader {
+    position: relative;
+    background: white;
+    padding: 18px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profileInfo {
+    min-width: 0;
+}
+
+.profileName {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.profileDetails {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.hourRateHeader {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.hourRateHeader strong {
+    color: #2563eb;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-left: 10px;
+}
+
+.iconBtn {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+
+/* ================================
+   QUICK LANGUAGE PANEL
+================================ */
+
+.languageQuickPanel {
+    position: absolute;
+    top: 70px;
+    right: 70px;
+    z-index: 20;
+    width: 155px;
+    padding: 7px;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.languageQuickPanel button {
+    width: 100%;
+    border: none;
+    background: white;
+    text-align: left;
+    padding: 11px;
+    border-radius: 10px;
+}
+
+.languageQuickPanel button:hover {
+    background: #f3f4f6;
+}
+
+
+/* ================================
+   SUMMARY
+================================ */
+
+.summaryGrid {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+}
+
+.summaryCard {
+    background: white;
+    border-radius: 15px;
+    padding: 13px 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.summaryIcon {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.summaryLabel {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.3;
+}
+
+.summaryValue {
+    margin-top: 5px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+
+/* ================================
+   MONTH NAVIGATION
+================================ */
+
+.monthNavigation {
+    padding: 5px 15px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.monthNavigation h2 {
+    font-size: 18px;
+}
+
+.monthNavigation button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    font-size: 28px;
+}
+
+
+/* ================================
+   CALENDAR
+================================ */
+
+.calendarContainer {
+    margin: 0 15px;
+    padding: 12px;
+    background: white;
+    border-radius: 17px;
+}
+
+.weekDays,
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.weekDays {
+    margin-bottom: 7px;
+}
+
+.weekDays div {
+    text-align: center;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.calendarDay {
+    min-height: 42px;
+    border-radius: 10px;
+    border: none;
+    background: #f3f4f6;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.calendarDay.empty {
+    background: transparent;
+}
+
+.calendarDay.scheduled {
+    background: #dcfce7;
+}
+
+.calendarDay.extra {
+    background: #fef3c7;
+}
+
+.calendarDay.rest {
+    background: #dbeafe;
+}
+
+.calendarDay.today {
+    outline: 2px solid #2563eb;
+}
+
+.calendarDay.selected {
+    box-shadow: inset 0 0 0 2px #111827;
+}
+
+.calendarDay .workDot {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #111827;
+    bottom: 5px;
+}
+
+
+/* ================================
+   LEGEND
+================================ */
+
+.calendarLegend {
+    margin: 12px 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.calendarLegend > div {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legendBox {
+    width: 13px;
+    height: 13px;
+    border-radius: 4px;
+}
+
+.legendBox.scheduled {
+    background: #dcfce7;
+}
+
+.legendBox.extra {
+    background: #fef3c7;
+}
+
+.legendBox.rest {
+    background: #dbeafe;
+}
+
+
+/* ================================
+   SELECTED DAY
+================================ */
+
+.selectedDayPanel {
+    margin: 15px;
+    padding: 16px;
+    border-radius: 17px;
+    background: white;
+}
+
+.selectedDayPanel h3 {
+    margin-bottom: 12px;
+}
+
+.dayInputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.dayInputs > div:last-child {
+    grid-column: span 2;
+}
+
+.dayInputs label {
+    margin-top: 0;
+}
+
+.dayResult {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dayResult div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dayResult span {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.dayButtons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+
+/* ================================
+   NFC ATTENDANCE
+================================ */
+
+.nfcAttendance {
+    margin: 15px;
+    padding: 18px;
+    background: white;
+    border-radius: 17px;
+}
+
+.nfcAttendance h3 {
+    margin-bottom: 15px;
+}
+
+.nfcAttendanceInfo {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.nfcAttendanceInfo .bigNfcIcon {
+    margin: 0;
+    font-size: 36px;
+}
+
+.nfcAttendanceInfo strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.nfcAttendanceInfo p {
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+/* ================================
+   SETTINGS
+================================ */
+
+.settingsHeader {
+    padding: 18px 16px;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.settingsHeader .backButton {
+    margin: 0;
+}
+
+.settingsHeader h2 {
+    font-size: 21px;
+}
+
+.settingsSection {
+    margin: 15px;
+    padding: 17px;
+    border-radius: 17px;
+    background: white;
+}
+
+.settingsSection h3 {
+    margin-bottom: 10px;
+    font-size: 17px;
+}
+
+.settingsRate {
+    margin-top: 14px;
+    padding: 13px;
+    border-radius: 12px;
+    background: #eef2ff;
+    display: flex;
+    justify-content: space-between;
+}
+
+.settingsRate strong {
+    color: #2563eb;
+}
+
+.nfcSettings {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f3f4f6;
+}
+
+.logoutSection {
+    margin: 25px 15px 40px;
+    text-align: center;
+}
+
+.logoutBtn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.logoutHint {
+    margin-top: 8px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+.appFooter {
+    text-align: center;
+    padding: 20px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (min-width: 600px) {
+
+    .summaryGrid {
+        max-width: 650px;
+        margin: auto;
+    }
+
+    .calendarContainer,
+    .calendarLegend,
+    .selectedDayPanel,
+    .nfcAttendance {
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .profileHeader {
+        padding-left: calc((100% - 650px) / 2);
+        padding-right: calc((100% - 650px) / 2);
+    }
+
+}
