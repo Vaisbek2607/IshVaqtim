@@ -6,9 +6,17 @@
     <title>Ish Vaqtim</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <!-- Telegram Mini App SDK: Telegram foydalanuvchi ma'lumotini shu orqali beradi -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
 <body>
+
+<!-- Telegram tasdiqlash holati. Faqat sinov uchun, keyin yashirinadi. -->
+<div id="telegramStatusBanner" style="padding:10px 14px;font-size:13px;text-align:center;">
+    Telegram bilan bog'lanilmoqda...
+</div>
 
 <!-- ==================== WELCOME ==================== -->
 <section id="welcomeScreen" class="screen active">
@@ -826,6 +834,7 @@
 </footer>
 
 
+<script src="telegram-auth.js"></script>
 <script src="app.js"></script>
 
 </body>
