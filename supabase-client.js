@@ -2,7 +2,7 @@
 // Bu fayl telegram-auth.js dan KEYIN, app.js dan OLDIN yuklanishi kerak.
 
 const SB_URL = "https://hkyyrsgnoonsihbwydrs.supabase.co";
-const SB_ANON_KEY = "sb_publishable_kdlfcT6hiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
+const SB_ANON_KEY = "sb_publishable_kdlfcTZhiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
 
 function sbHeaders(extra) {
     return Object.assign({
