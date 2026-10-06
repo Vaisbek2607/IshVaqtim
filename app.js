@@ -662,51 +662,83 @@ function showRegisterMessage(message) {
 
 // ==================== NFC REGISTRATION ====================
 
-function testRegisterNfc() {
-
-    // Hozircha TEST rejimi.
-    // Haqiqiy NFC keyinchalik Android Studio
-    // native Android qismida ishlaydi.
-
-    registeredNfc = "TEST-NFC-CARD";
-
-    localStorage.setItem(
-        "ishVaqtimNfc",
-        registeredNfc
-    );
-
+async function testRegisterNfc() {
 
     const status =
-        document.getElementById(
-            "registerNfcStatus"
-        );
+        document.getElementById("registerNfcStatus");
 
-    if (status) {
-
-        status.textContent =
-            "✅ " + t("nfcRegistered");
+    if (!window.telegramUser) {
+        if (status) {
+            status.textContent =
+                "⚠️ Avval Telegram tomonidan tanilishingiz kerak. Sahifani qayta oching.";
+        }
+        return;
     }
 
+    if (status) {
+        status.textContent = "Qidirilmoqda... (avval kartani telefon ilovasiga tekkizgan bo'ling)";
+    }
 
-    const finishBtn =
-        document.getElementById(
-            "finishRegisterBtn"
+    try {
+        // So'nggi 2 daqiqa ichida kelgan, hali bog'lanmagan skanni qidiramiz
+        const scan = await sbFindRecentUnclaimedScan(120);
+
+        if (!scan) {
+            if (status) {
+                status.textContent =
+                    "❌ Karta topilmadi. Avval native ilovada kartani tekkizing, so'ng shu tugmani bosing.";
+            }
+            return;
+        }
+
+        const claimed = await sbClaimScan(scan.id);
+
+        if (!claimed) {
+            if (status) {
+                status.textContent =
+                    "⚠️ Bu karta shu payt boshqa joyda band qilindi. Kartani qayta tekkizib ko'ring.";
+            }
+            return;
+        }
+
+        registeredNfc = scan.card_hash;
+
+        localStorage.setItem(
+            "ishVaqtimNfc",
+            registeredNfc
         );
 
-    if (finishBtn) {
-        finishBtn.disabled = false;
+        if (status) {
+            status.textContent = "✅ " + t("nfcRegistered");
+        }
+
+        const finishBtn =
+            document.getElementById("finishRegisterBtn");
+
+        if (finishBtn) {
+            finishBtn.disabled = false;
+        }
+    } catch (e) {
+        if (status) {
+            status.textContent = "❌ Xato: " + e.message;
+        }
     }
 }
 
 
 // ==================== FINISH REGISTRATION ====================
 
-function finishRegistration() {
+async function finishRegistration() {
 
     if (!registeredNfc) {
 
         alert(t("noNfc"));
 
+        return;
+    }
+
+    if (!window.telegramUser) {
+        alert("Telegram foydalanuvchisi aniqlanmadi. Sahifani qayta oching.");
         return;
     }
 
@@ -753,6 +785,31 @@ function finishRegistration() {
 
         monthlySalary
     };
+
+
+    const status =
+        document.getElementById("registerNfcStatus");
+
+    try {
+        if (status) status.textContent = "Saqlanmoqda...";
+
+        await sbUpsertProfile({
+            telegram_id: window.telegramUser.id,
+            first_name: name,
+            last_name: surname,
+            schedule_type: selectedSchedule,
+            schedule_start: scheduleStart,
+            work_start: workStart,
+            work_end: workEnd,
+            break_minutes: breakMinutes,
+            monthly_salary: monthlySalary,
+            card_hash: registeredNfc
+        });
+    } catch (e) {
+        if (status) status.textContent = "❌ Supabase xatosi: " + e.message;
+        alert("Profilni serverga saqlab bo'lmadi: " + e.message);
+        return;
+    }
 
 
     localStorage.setItem(
