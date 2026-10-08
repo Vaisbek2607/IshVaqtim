@@ -3,7 +3,7 @@
 // Keyingi bosqichda shu yerda olingan foydalanuvchi ID'si profil va karta bog'lash uchun ishlatiladi.
 
 const SUPABASE_URL = "https://hkyyrsgnoonsihbwydrs.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_kdlfcT6hiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
+const SUPABASE_ANON_KEY = "sb_publishable_kdlfcTZhiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
 const VERIFY_FUNCTION_URL = SUPABASE_URL + "/functions/v1/telegram-verify";
 
 // Tasdiqlangan foydalanuvchi shu global o'zgaruvchiga yoziladi.
