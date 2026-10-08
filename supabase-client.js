@@ -2,7 +2,7 @@
 // Bu fayl telegram-auth.js dan KEYIN, app.js dan OLDIN yuklanishi kerak.
 
 const SB_URL = "https://hkyyrsgnoonsihbwydrs.supabase.co";
-const SB_ANON_KEY = "sb_publishable_kdlfcTZhiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
+const SB_ANON_KEY = "sb_publishable_kdlfcT6hiuEXhZCwWPApeg__SFyVNsX"; // tekshiring!
 
 function sbHeaders(extra) {
     return Object.assign({
@@ -69,4 +69,50 @@ async function sbGetProfile(telegramId) {
     if (!res.ok) throw new Error("Profil o'qishda xato: " + res.status);
     const rows = await res.json();
     return rows.length > 0 ? rows[0] : null;
+}
+
+
+// Profilning barcha attendance (davomat) yozuvlarini qaytaradi.
+async function sbListAttendance(profileId) {
+    const url = SB_URL +
+        "/rest/v1/attendance?profile_id=eq." + profileId +
+        "&order=work_date.asc&limit=1000";
+
+    const res = await fetch(url, { headers: sbHeaders() });
+    if (!res.ok) throw new Error("attendance so'rovi xato: " + res.status);
+    return await res.json();
+}
+
+// Bitta kunning Kirish/Chiqish vaqtini yozadi yoki yangilaydi (qo'lda tahrirlash uchun).
+async function sbUpsertAttendanceDay(profileId, workDate, checkIn, checkOut) {
+    const url = SB_URL + "/rest/v1/attendance?on_conflict=profile_id,work_date";
+
+    const body = {
+        profile_id: profileId,
+        work_date: workDate,
+        check_in: checkIn || null,
+        check_out: checkOut || null,
+        source: "manual"
+    };
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: sbHeaders({ "Prefer": "resolution=merge-duplicates,return=minimal" }),
+        body: JSON.stringify(body)
+    });
+
+    if (!res.ok) throw new Error("attendance saqlashda xato: " + res.status);
+}
+
+// Bitta kunning yozuvini butunlay o'chiradi.
+async function sbDeleteAttendanceDay(profileId, workDate) {
+    const url = SB_URL +
+        "/rest/v1/attendance?profile_id=eq." + profileId + "&work_date=eq." + workDate;
+
+    const res = await fetch(url, {
+        method: "DELETE",
+        headers: sbHeaders({ "Prefer": "return=minimal" })
+    });
+
+    if (!res.ok) throw new Error("attendance o'chirishda xato: " + res.status);
 }

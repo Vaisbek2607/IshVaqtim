@@ -1511,6 +1511,17 @@ function saveSelectedDay() {
     updateCalendar();
 
     updateSummary();
+
+
+    // Supabase'ga ham yozamiz, shunda Android ilova va boshqa qurilmalar ham ko'radi
+    if (window.currentProfileId) {
+        sbUpsertAttendanceDay(
+            window.currentProfileId,
+            selectedDate,
+            start || null,
+            end || null
+        ).catch(e => console.warn("Supabase'ga saqlashda xato:", e));
+    }
 }
 
 
@@ -1519,6 +1530,9 @@ function deleteSelectedDay() {
     if (!selectedDate) {
         return;
     }
+
+
+    const dateToDelete = selectedDate;
 
 
     delete workData[selectedDate];
@@ -1542,6 +1556,14 @@ function deleteSelectedDay() {
     updateCalendar();
 
     updateSummary();
+
+
+    if (window.currentProfileId) {
+        sbDeleteAttendanceDay(
+            window.currentProfileId,
+            dateToDelete
+        ).catch(e => console.warn("Supabase'dan o'chirishda xato:", e));
+    }
 }
 
 
@@ -1921,6 +1943,22 @@ function saveSettings() {
         "ishVaqtimSettings",
         JSON.stringify(settings)
     );
+
+
+    if (window.currentProfileId && window.telegramUser) {
+        sbUpsertProfile({
+            telegram_id: window.telegramUser.id,
+            first_name: settings.name,
+            last_name: settings.surname,
+            schedule_type: settings.schedule,
+            schedule_start: settings.scheduleStart,
+            work_start: settings.workStart,
+            work_end: settings.workEnd,
+            break_minutes: settings.breakMinutes,
+            monthly_salary: settings.monthlySalary,
+            card_hash: registeredNfc
+        }).catch(e => console.warn("Supabase'ga profil saqlashda xato:", e));
+    }
 
 
     alert("✅ " + t("saved"));
@@ -2320,6 +2358,9 @@ document.addEventListener(
 
 
 // ==================== START APP ====================
+// Eslatma: startApp() endi bu yerda avtomatik chaqirilmaydi.
+// Uni supabase-sync.js chaqiradi, chunki avval Telegram orqali
+// profilni Supabase'dan yuklab olishimiz kerak.
 
 function startApp() {
 
@@ -2338,6 +2379,3 @@ function startApp() {
         showWelcome();
     }
 }
-
-
-startApp();
