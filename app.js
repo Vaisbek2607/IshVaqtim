@@ -923,12 +923,9 @@ function dateKey(date) {
 }
 
 
-function isScheduledWorkDay(date) {
-
-    if (!settings || !settings.scheduleStart) {
-        return false;
-    }
-
+// Sana bilan grafik boshlanish sanasi orasidagi "kun farqi"ni hisoblaydi.
+// Musbat ham, manfiy ham bo'lishi mumkin (sana boshlanishdan oldin bo'lsa).
+function daysSinceScheduleStart(date) {
 
     const start =
         parseDateOnly(settings.scheduleStart);
@@ -940,33 +937,58 @@ function isScheduledWorkDay(date) {
             date.getDate()
         );
 
+    return Math.floor(
+        (current - start) /
+        (1000 * 60 * 60 * 24)
+    );
+}
 
-    const diff =
-        Math.floor(
-            (current - start) /
-            (1000 * 60 * 60 * 24)
-        );
+// Haqiqiy matematik mod (manfiy sonlar uchun ham to'g'ri ishlaydi).
+function trueMod(n, m) {
+    return ((n % m) + m) % m;
+}
 
+// KALENDAR uchun: sana grafik bo'yicha ish kunimi?
+// Boshlanish sanasidan OLDINGI kunlar ish kuni emas deb hisoblanadi
+// (ishchi hali ishga kirmagan edi, shuning uchun kalendarda bo'sh ko'rinadi).
+function isScheduledWorkDay(date) {
+
+    if (!settings || !settings.scheduleStart) {
+        return false;
+    }
+
+    const diff = daysSinceScheduleStart(date);
 
     if (diff < 0) {
         return false;
     }
 
+    return isPatternWorkDay(date);
+}
+
+// MAOSH HISOBI uchun: sana grafik DOIRASIGA to'g'ri keladimi?
+// Bu yerda boshlanish sanasidan oldingi/keyingi farqi muhim emas -
+// faqat grafik SIKLINING (2/2, 5/2, 6/1) o'zi hisobga olinadi.
+// Shu bilan ish BOSHLANGAN oyda ham, to'liq oy normasi bo'yicha hisoblanadi.
+function isPatternWorkDay(date) {
+
+    if (!settings || !settings.scheduleStart) {
+        return false;
+    }
+
+    const diff = daysSinceScheduleStart(date);
 
     if (settings.schedule === "2/2") {
-        return diff % 4 < 2;
+        return trueMod(diff, 4) < 2;
     }
-
 
     if (settings.schedule === "5/2") {
-        return diff % 7 < 5;
+        return trueMod(diff, 7) < 5;
     }
-
 
     if (settings.schedule === "6/1") {
-        return diff % 7 < 6;
+        return trueMod(diff, 7) < 6;
     }
-
 
     return false;
 }
@@ -1056,7 +1078,7 @@ function getScheduledDaysInMonth(date) {
             );
 
 
-        if (isScheduledWorkDay(current)) {
+        if (isPatternWorkDay(current)) {
             count++;
         }
     }
@@ -2018,193 +2040,106 @@ function getCurrentTimeMinutes() {
 }
 
 
-function nfcTest() {
+// Vaqtni eng yaqin SOATGA yaxlitlaydi: daqiqa 30 dan kam bo'lsa pastga, aks holda yuqoriga.
+// Masalan 07:45 -> 08:00, 08:25 -> 08:00.
+function roundToNearestHour(date) {
+
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    if (minutes >= 30) {
+        hours = (hours + 1) % 24;
+    }
+
+    return String(hours).padStart(2, "0") + ":00";
+}
+
+
+// "✅ Kirish" tugmasi bosilganda.
+function markEntry() {
 
     if (!registeredNfc) {
-
-        showNfcMessage(
-            "❌ " + t("noNfc")
-        );
-
+        showNfcMessage("❌ " + t("noNfc"));
         return;
     }
 
+    const today = getTodayKey();
+    const todayData = workData[today] || {};
 
-    const today =
-        getTodayKey();
-
-
-    const nowMinutes =
-        getCurrentTimeMinutes();
-
-
-    const todayData =
-        workData[today] || {};
-
-
-    // --------------------------------------
-    // 07:30 – 08:30
-    // KIRISH
-    // --------------------------------------
-
-    if (
-        nowMinutes >= 7 * 60 + 30 &&
-        nowMinutes <= 8 * 60 + 30
-    ) {
-
-        if (todayData.start) {
-
-            showNfcMessage(
-                "⚠️ " + t("nfcAlreadyEntered")
-            );
-
-            return;
-        }
-
-
-        workData[today] = {
-
-            ...todayData,
-
-            start: "08:00",
-
-            breakMinutes:
-                settings.breakMinutes || 0
-        };
-
-
-        saveWorkData();
-
-
-        showNfcMessage(
-            "✅ " + t("nfcMorning")
-        );
-
-
-        updateCalendar();
-
-        updateSummary();
-
-        updateNfcStatus();
-
+    if (todayData.start) {
+        showNfcMessage("⚠️ " + t("nfcAlreadyEntered"));
         return;
     }
 
+    const roundedTime = roundToNearestHour(new Date());
 
-    // --------------------------------------
-    // 18:00 – 19:29
-    // CHIQISH 19:00
-    // --------------------------------------
+    workData[today] = {
+        ...todayData,
+        start: roundedTime,
+        breakMinutes: settings.breakMinutes || 0
+    };
 
-    if (
-        nowMinutes >= 18 * 60 &&
-        nowMinutes < 19 * 60 + 30
-    ) {
+    saveWorkData();
+    showNfcMessage("✅ Kirish qayd etildi: " + roundedTime);
 
-        if (todayData.end) {
+    updateCalendar();
+    updateSummary();
+    updateNfcStatus();
 
-            showNfcMessage(
-                "⚠️ " + t("nfcAlreadyExited")
-            );
-
-            return;
-        }
-
-
-        if (!todayData.start) {
-
-            showNfcMessage(
-                "⚠️ Avval Kirish qayd etilishi kerak."
-            );
-
-            return;
-        }
+    if (window.currentProfileId) {
+        sbUpsertAttendanceDay(
+            window.currentProfileId,
+            today,
+            roundedTime,
+            todayData.end || null
+        ).catch(e => console.warn("Supabase'ga saqlashda xato:", e));
+    }
+}
 
 
-        workData[today] = {
+// "🚪 Chiqish" tugmasi bosilganda.
+function markExit() {
 
-            ...todayData,
-
-            end: "19:00"
-        };
-
-
-        saveWorkData();
-
-
-        showNfcMessage(
-            "✅ " + t("nfcEvening")
-        );
-
-
-        updateCalendar();
-
-        updateSummary();
-
-        updateNfcStatus();
-
+    if (!registeredNfc) {
+        showNfcMessage("❌ " + t("noNfc"));
         return;
     }
 
+    const today = getTodayKey();
+    const todayData = workData[today] || {};
 
-    // --------------------------------------
-    // 19:30 dan keyin
-    // CHIQISH 20:00
-    // --------------------------------------
-
-    if (
-        nowMinutes >= 19 * 60 + 30
-    ) {
-
-        if (todayData.end) {
-
-            showNfcMessage(
-                "⚠️ " + t("nfcAlreadyExited")
-            );
-
-            return;
-        }
-
-
-        if (!todayData.start) {
-
-            showNfcMessage(
-                "⚠️ Avval Kirish qayd etilishi kerak."
-            );
-
-            return;
-        }
-
-
-        workData[today] = {
-
-            ...todayData,
-
-            end: "20:00"
-        };
-
-
-        saveWorkData();
-
-
-        showNfcMessage(
-            "✅ " + t("nfcLate")
-        );
-
-
-        updateCalendar();
-
-        updateSummary();
-
-        updateNfcStatus();
-
+    if (todayData.end) {
+        showNfcMessage("⚠️ " + t("nfcAlreadyExited"));
         return;
     }
 
+    if (!todayData.start) {
+        showNfcMessage("⚠️ Avval Kirish qayd etilishi kerak.");
+        return;
+    }
 
-    showNfcMessage(
-        "⚠️ " + t("nfcWrongTime")
-    );
+    const roundedTime = roundToNearestHour(new Date());
+
+    workData[today] = {
+        ...todayData,
+        end: roundedTime
+    };
+
+    saveWorkData();
+    showNfcMessage("✅ Chiqish qayd etildi: " + roundedTime);
+
+    updateCalendar();
+    updateSummary();
+    updateNfcStatus();
+
+    if (window.currentProfileId) {
+        sbUpsertAttendanceDay(
+            window.currentProfileId,
+            today,
+            todayData.start,
+            roundedTime
+        ).catch(e => console.warn("Supabase'ga saqlashda xato:", e));
+    }
 }
 
 
