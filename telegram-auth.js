@@ -19,6 +19,13 @@ function setTelegramBanner(text, isError) {
 }
 
 async function verifyTelegramUser() {
+
+    // Agar sahifa Android ilova ichidagi WebView'da ochilgan bo'lsa,
+    // Telegram umuman kerak emas - supabase-sync.js buni o'zi boshqaradi.
+    if (window.AndroidApp) {
+        return;
+    }
+
     const tg = window.Telegram ? window.Telegram.WebApp : null;
 
     if (!tg || !tg.initData) {

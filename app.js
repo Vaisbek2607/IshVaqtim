@@ -2307,7 +2307,10 @@ function startApp() {
         registeredNfc
     ) {
 
-        showLogin();
+        // Avval alohida "Login" bosqichi bor edi (qo'shimcha NFC tugmasini bosish talab qilardi).
+        // Endi Telegram/Android orqali foydalanuvchi allaqachon tanilgani uchun,
+        // to'g'ridan-to'g'ri asosiy ekranga o'tamiz.
+        openHome();
 
     } else {
 

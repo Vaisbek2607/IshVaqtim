@@ -116,3 +116,14 @@ async function sbDeleteAttendanceDay(profileId, workDate) {
 
     if (!res.ok) throw new Error("attendance o'chirishda xato: " + res.status);
 }
+
+
+// Android ilova ichidagi WebView uchun: profilni Telegram ID emas, Supabase'ning
+// o'z profil ID'si bo'yicha o'qiydi (Android bu ID'ni mahalliy xotirasida saqlaydi).
+async function sbGetProfileById(profileId) {
+    const url = SB_URL + "/rest/v1/profiles?id=eq." + profileId + "&limit=1";
+    const res = await fetch(url, { headers: sbHeaders() });
+    if (!res.ok) throw new Error("Profil o'qishda xato: " + res.status);
+    const rows = await res.json();
+    return rows.length > 0 ? rows[0] : null;
+}
